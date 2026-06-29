@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"golang.org/x/sys/windows/registry"
@@ -14,6 +15,8 @@ import (
 )
 
 const pathValueName = "Path"
+
+var percentEnvPattern = regexp.MustCompile(`%([^%]+)%`)
 
 func Apply(action Action) (Result, error) {
 	directory, err := executableDirectory()
@@ -141,7 +144,19 @@ func samePath(left, right string) bool {
 	if left == "" || right == "" {
 		return false
 	}
+	left = expandWindowsEnv(left)
+	right = expandWindowsEnv(right)
 	left = filepath.Clean(left)
 	right = filepath.Clean(right)
 	return strings.EqualFold(left, right)
+}
+
+func expandWindowsEnv(value string) string {
+	return percentEnvPattern.ReplaceAllStringFunc(value, func(token string) string {
+		name := token[1 : len(token)-1]
+		if expanded, ok := os.LookupEnv(name); ok && expanded != "" {
+			return expanded
+		}
+		return token
+	})
 }
