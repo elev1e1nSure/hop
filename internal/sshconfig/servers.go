@@ -106,7 +106,7 @@ func EditServer(config *Config, oldAlias string, updated domain.Server) error {
 
 	lines := append([]string(nil), config.Lines...)
 	lines[block.HostLine] = replaceHostLine(lines[block.HostLine], remaining)
-	insert := renderServerBlock(updated)
+	insert := renderUpdatedBlock(config.Lines, block, updated)
 	withInsert := make([]string, 0, len(lines)+len(insert)+1)
 	withInsert = append(withInsert, lines[:block.Start]...)
 	withInsert = append(withInsert, insert...)
@@ -184,6 +184,15 @@ func findOriginBlock(config *Config, alias string) int {
 }
 
 func rewriteSingleHostBlock(lines []string, block Block, server domain.Server) []string {
+	body := renderUpdatedBlock(lines, block, server)
+	out := make([]string, 0, len(lines)-(block.End-block.Start)+len(body))
+	out = append(out, lines[:block.Start]...)
+	out = append(out, body...)
+	out = append(out, lines[block.End:]...)
+	return out
+}
+
+func renderUpdatedBlock(lines []string, block Block, server domain.Server) []string {
 	desired := map[string]string{
 		"hostname":     server.Host,
 		"user":         server.User,
@@ -240,11 +249,7 @@ func rewriteSingleHostBlock(lines []string, block Block, server domain.Server) [
 		body = append(body[:insertAt], append(missing, body[insertAt:]...)...)
 	}
 
-	out := make([]string, 0, len(lines)-(block.End-block.Start)+len(body))
-	out = append(out, lines[:block.Start]...)
-	out = append(out, body...)
-	out = append(out, lines[block.End:]...)
-	return out
+	return body
 }
 
 func renderServerBlock(server domain.Server) []string {
