@@ -79,6 +79,9 @@ func ResolveServers(config *Config, records map[string]domain.HistoryRecord) ([]
 }
 
 func AddServer(config *Config, server domain.Server) error {
+	saved := append([]string(nil), config.Lines...)
+	savedTrailing := config.HadTrailing
+
 	lines := append([]string(nil), config.Lines...)
 	if len(lines) > 0 && strings.TrimSpace(lines[len(lines)-1]) != "" {
 		lines = append(lines, "")
@@ -88,7 +91,12 @@ func AddServer(config *Config, server domain.Server) error {
 	}
 	lines = append(lines, renderServerBlock(server)...)
 	config.Lines = lines
-	return config.write()
+	if err := config.write(); err != nil {
+		config.Lines = saved
+		config.HadTrailing = savedTrailing
+		return err
+	}
+	return nil
 }
 
 func EditServer(config *Config, oldAlias string, updated domain.Server) error {
@@ -96,10 +104,15 @@ func EditServer(config *Config, oldAlias string, updated domain.Server) error {
 	if blockIndex < 0 {
 		return apperr.New(apperr.ErrServerNotFound, oldAlias, config.Path)
 	}
+	saved := append([]string(nil), config.Lines...)
 	block := config.Blocks[blockIndex]
 	if len(block.Hosts) == 1 && block.Hosts[0] == oldAlias {
 		config.Lines = rewriteSingleHostBlock(config.Lines, block, updated)
-		return config.write()
+		if err := config.write(); err != nil {
+			config.Lines = saved
+			return err
+		}
+		return nil
 	}
 
 	remaining := make([]string, 0, len(block.Hosts)-1)
@@ -121,7 +134,11 @@ func EditServer(config *Config, oldAlias string, updated domain.Server) error {
 	withInsert = append(withInsert, "")
 	withInsert = append(withInsert, lines[block.Start:]...)
 	config.Lines = withInsert
-	return config.write()
+	if err := config.write(); err != nil {
+		config.Lines = saved
+		return err
+	}
+	return nil
 }
 
 func DeleteServer(config *Config, alias string) error {
@@ -129,6 +146,7 @@ func DeleteServer(config *Config, alias string) error {
 	if blockIndex < 0 {
 		return apperr.New(apperr.ErrServerNotFound, alias, config.Path)
 	}
+	saved := append([]string(nil), config.Lines...)
 	block := config.Blocks[blockIndex]
 	if len(block.Hosts) == 1 && block.Hosts[0] == alias {
 		lines := make([]string, 0, len(config.Lines)-(block.End-block.Start))
@@ -138,7 +156,11 @@ func DeleteServer(config *Config, alias string) error {
 			lines = lines[:len(lines)-1]
 		}
 		config.Lines = lines
-		return config.write()
+		if err := config.write(); err != nil {
+			config.Lines = saved
+			return err
+		}
+		return nil
 	}
 
 	remaining := make([]string, 0, len(block.Hosts)-1)
@@ -151,7 +173,11 @@ func DeleteServer(config *Config, alias string) error {
 		return apperr.New(apperr.ErrAliasNotInHost, alias)
 	}
 	config.Lines[block.HostLine] = replaceHostLine(config.Lines[block.HostLine], remaining)
-	return config.write()
+	if err := config.write(); err != nil {
+		config.Lines = saved
+		return err
+	}
+	return nil
 }
 
 func isConcreteAlias(host string) bool {
