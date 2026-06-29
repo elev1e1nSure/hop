@@ -9,7 +9,16 @@ import (
 )
 
 func AtomicWrite(path string, data []byte, mode, dirMode os.FileMode) error {
-	dir := filepath.Dir(path)
+	realPath := path
+	if info, err := os.Lstat(path); err == nil && info.Mode()&os.ModeSymlink != 0 {
+		resolved, resolveErr := filepath.EvalSymlinks(path)
+		if resolveErr != nil {
+			cause := fmt.Errorf("resolve symlink %q: %w", path, resolveErr)
+			return apperr.Wrap(apperr.ErrReplaceFile, cause, path)
+		}
+		realPath = resolved
+	}
+	dir := filepath.Dir(realPath)
 	if err := os.MkdirAll(dir, dirMode); err != nil {
 		cause := fmt.Errorf("create parent directory %q: %w", dir, err)
 		return apperr.Wrap(apperr.ErrCreateDirectory, cause, dir)
@@ -42,9 +51,9 @@ func AtomicWrite(path string, data []byte, mode, dirMode os.FileMode) error {
 		cause := fmt.Errorf("close temporary file %q for %q: %w", tmpName, path, err)
 		return apperr.Wrap(apperr.ErrCloseTemporaryFile, cause, path)
 	}
-	if err := os.Rename(tmpName, path); err != nil {
-		cause := fmt.Errorf("replace %q with %q: %w", path, tmpName, err)
-		return apperr.Wrap(apperr.ErrReplaceFile, cause, path)
+	if err := os.Rename(tmpName, realPath); err != nil {
+		cause := fmt.Errorf("replace %q with %q: %w", realPath, tmpName, err)
+		return apperr.Wrap(apperr.ErrReplaceFile, cause, realPath)
 	}
 	return nil
 }
