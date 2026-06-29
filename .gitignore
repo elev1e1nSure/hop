@@ -1,0 +1,18 @@
+# Build output
+sshm
+sshm.exe
+/dist/
+
+# Go
+*.test
+*.out
+coverage.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
