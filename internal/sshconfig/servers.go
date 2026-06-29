@@ -110,21 +110,24 @@ func AddServer(config *Config, server domain.Server) error {
 	if err := config.syncFromDisk(); err != nil {
 		return err
 	}
-	saved := append([]string(nil), config.Lines...)
-	savedTrailing := config.HadTrailing
+	file := config.rootFile()
+	saved := append([]string(nil), file.Lines...)
+	savedTrailing := file.HadTrailing
 
-	lines := append([]string(nil), config.Lines...)
+	lines := append([]string(nil), file.Lines...)
 	if len(lines) > 0 && strings.TrimSpace(lines[len(lines)-1]) != "" {
 		lines = append(lines, "")
 	}
-	if len(config.Lines) == 0 {
-		config.HadTrailing = true
+	if len(file.Lines) == 0 {
+		file.HadTrailing = true
 	}
 	lines = append(lines, renderServerBlock(server)...)
-	config.Lines = lines
-	if err := config.write(); err != nil {
-		config.Lines = saved
-		config.HadTrailing = savedTrailing
+	file.Lines = lines
+	config.mirrorRoot(file)
+	if err := writeConfigFile(file); err != nil {
+		file.Lines = saved
+		file.HadTrailing = savedTrailing
+		config.mirrorRoot(file)
 		return err
 	}
 	return nil
@@ -138,12 +141,17 @@ func EditServer(config *Config, oldAlias string, updated domain.Server) error {
 	if blockIndex < 0 {
 		return apperr.New(apperr.ErrServerNotFound, oldAlias, config.Path)
 	}
-	saved := append([]string(nil), config.Lines...)
 	block := config.Blocks[blockIndex]
+	file := config.fileForBlock(block)
+	saved := append([]string(nil), file.Lines...)
+	savedTrailing := file.HadTrailing
 	if len(block.Hosts) == 1 && block.Hosts[0] == oldAlias {
-		config.Lines = rewriteSingleHostBlock(config.Lines, block, updated)
-		if err := config.write(); err != nil {
-			config.Lines = saved
+		file.Lines = rewriteSingleHostBlock(file.Lines, block, updated)
+		config.mirrorRoot(file)
+		if err := writeConfigFile(file); err != nil {
+			file.Lines = saved
+			file.HadTrailing = savedTrailing
+			config.mirrorRoot(file)
 			return err
 		}
 		return nil
@@ -159,17 +167,20 @@ func EditServer(config *Config, oldAlias string, updated domain.Server) error {
 		return apperr.New(apperr.ErrDetachServer, oldAlias)
 	}
 
-	lines := append([]string(nil), config.Lines...)
+	lines := append([]string(nil), file.Lines...)
 	lines[block.HostLine] = replaceHostLine(lines[block.HostLine], remaining)
-	insert := renderUpdatedBlock(config.Lines, block, updated)
+	insert := renderUpdatedBlock(file.Lines, block, updated)
 	withInsert := make([]string, 0, len(lines)+len(insert)+1)
 	withInsert = append(withInsert, lines[:block.Start]...)
 	withInsert = append(withInsert, insert...)
 	withInsert = append(withInsert, "")
 	withInsert = append(withInsert, lines[block.Start:]...)
-	config.Lines = withInsert
-	if err := config.write(); err != nil {
-		config.Lines = saved
+	file.Lines = withInsert
+	config.mirrorRoot(file)
+	if err := writeConfigFile(file); err != nil {
+		file.Lines = saved
+		file.HadTrailing = savedTrailing
+		config.mirrorRoot(file)
 		return err
 	}
 	return nil
@@ -183,18 +194,23 @@ func DeleteServer(config *Config, alias string) error {
 	if blockIndex < 0 {
 		return apperr.New(apperr.ErrServerNotFound, alias, config.Path)
 	}
-	saved := append([]string(nil), config.Lines...)
 	block := config.Blocks[blockIndex]
+	file := config.fileForBlock(block)
+	saved := append([]string(nil), file.Lines...)
+	savedTrailing := file.HadTrailing
 	if len(block.Hosts) == 1 && block.Hosts[0] == alias {
-		lines := make([]string, 0, len(config.Lines)-(block.End-block.Start))
-		lines = append(lines, config.Lines[:block.Start]...)
-		lines = append(lines, config.Lines[block.End:]...)
+		lines := make([]string, 0, len(file.Lines)-(block.End-block.Start))
+		lines = append(lines, file.Lines[:block.Start]...)
+		lines = append(lines, file.Lines[block.End:]...)
 		for len(lines) > 1 && strings.TrimSpace(lines[len(lines)-1]) == "" && strings.TrimSpace(lines[len(lines)-2]) == "" {
 			lines = lines[:len(lines)-1]
 		}
-		config.Lines = lines
-		if err := config.write(); err != nil {
-			config.Lines = saved
+		file.Lines = lines
+		config.mirrorRoot(file)
+		if err := writeConfigFile(file); err != nil {
+			file.Lines = saved
+			file.HadTrailing = savedTrailing
+			config.mirrorRoot(file)
 			return err
 		}
 		return nil
@@ -209,9 +225,12 @@ func DeleteServer(config *Config, alias string) error {
 	if len(remaining) == len(block.Hosts) {
 		return apperr.New(apperr.ErrAliasNotInHost, alias)
 	}
-	config.Lines[block.HostLine] = replaceHostLine(config.Lines[block.HostLine], remaining)
-	if err := config.write(); err != nil {
-		config.Lines = saved
+	file.Lines[block.HostLine] = replaceHostLine(file.Lines[block.HostLine], remaining)
+	config.mirrorRoot(file)
+	if err := writeConfigFile(file); err != nil {
+		file.Lines = saved
+		file.HadTrailing = savedTrailing
+		config.mirrorRoot(file)
 		return err
 	}
 	return nil

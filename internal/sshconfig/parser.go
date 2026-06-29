@@ -14,38 +14,55 @@ type boundary struct {
 	hosts []string
 }
 
-func parseBlocks(path string, lines []string) ([]Block, error) {
-	bounds, err := walkBoundaries(path, lines)
-	if err != nil {
-		return nil, err
-	}
-	return collectBlocks(path, lines, bounds)
+type includeDirective struct {
+	line     int
+	patterns []string
 }
 
-func walkBoundaries(path string, lines []string) ([]boundary, error) {
+func parseBlocks(path string, lines []string) ([]Block, error) {
+	blocks, _, err := parseFile(path, lines)
+	return blocks, err
+}
+
+func parseFile(path string, lines []string) ([]Block, []includeDirective, error) {
+	bounds, includes, err := walkBoundaries(path, lines)
+	if err != nil {
+		return nil, nil, err
+	}
+	blocks, err := collectBlocks(path, lines, bounds)
+	if err != nil {
+		return nil, nil, err
+	}
+	return blocks, includes, nil
+}
+
+func walkBoundaries(path string, lines []string) ([]boundary, []includeDirective, error) {
 	bounds := make([]boundary, 0)
+	includes := make([]includeDirective, 0)
 	for index, line := range lines {
 		key, args, ok, err := parseDirective(line)
 		if err != nil {
-			return nil, apperr.New(apperr.ErrUnclosedQuote, path, index+1)
+			return nil, nil, apperr.New(apperr.ErrUnclosedQuote, path, index+1)
 		}
 		if !ok {
 			continue
 		}
 		if requiresValue(key) && (len(args) == 0 || args[0] == "") {
-			return nil, apperr.New(apperr.ErrMissingDirectiveArg, path, key, index+1)
+			return nil, nil, apperr.New(apperr.ErrMissingDirectiveArg, path, key, index+1)
 		}
 		switch key {
 		case "host":
 			if err := validateHostPatterns(path, args, index); err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			bounds = append(bounds, boundary{line: index, kind: "host", hosts: args})
+		case "include":
+			includes = append(includes, includeDirective{line: index, patterns: args})
 		case "match":
 			bounds = append(bounds, boundary{line: index, kind: "match"})
 		}
 	}
-	return bounds, nil
+	return bounds, includes, nil
 }
 
 func validateHostPatterns(path string, args []string, line int) error {
@@ -111,7 +128,7 @@ func readBlockDirectives(path string, lines []string, start, end int) (map[strin
 
 func requiresValue(key string) bool {
 	switch key {
-	case "host", "match", "hostname", "user", "port", "identityfile", "proxyjump", "proxycommand":
+	case "host", "match", "include", "hostname", "user", "port", "identityfile", "proxyjump", "proxycommand":
 		return true
 	default:
 		return false

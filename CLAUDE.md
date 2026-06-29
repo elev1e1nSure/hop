@@ -51,7 +51,8 @@ internal/util/      — fs helpers (AtomicWrite with symlink resolution), fuzzy 
 - The parser recognizes `HostName`, `User`, `Port`, `IdentityFile`, `ProxyJump`, `ProxyCommand`.
 - Only the first `HostName`/`User`/`Port` value is resolved into `domain.Server`; duplicate `IdentityFile` lines are preserved through edits (not dropped).
 - Multi-host block edits preserve all directives from the original block — only the edited canonical four are updated.
-- Global directives and `Include` are preserved as text but not semantically processed.
+- `Include` directives are expanded semantically for server discovery; included `Host` blocks are edited/deleted in their source file, while new servers are added to the root config.
+- Global directives are preserved as text but not resolved into `domain.Server`.
 
 ## Running
 
@@ -76,7 +77,7 @@ go test ./internal/sshconfig/...            # single package
 go test -run TestFoo ./internal/sshconfig/  # single test
 ```
 
-Tests exist for: `cli`, `sshclient`, `history`, `sshconfig`, `i18n`. No TUI tests.
+Tests exist for: `cli`, `sshclient`, `history`, `sshconfig`, `i18n`, and `ui` view/model behavior.
 
 ## Conventions
 

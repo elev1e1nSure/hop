@@ -139,3 +139,161 @@ func TestEqualsWithoutWhitespaceIsParsed(t *testing.T) {
 		t.Fatalf("servers = %#v", servers)
 	}
 }
+
+func TestIncludeLoadsServersFromIncludedFile(t *testing.T) {
+	dir := t.TempDir()
+	root := filepath.Join(dir, "config")
+	included := filepath.Join(dir, "hosts.conf")
+	if err := os.WriteFile(root, []byte("Include hosts.conf\nHost root\n  HostName root.example.com\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(included, []byte("Host included\n  HostName included.example.com\n  Port 2202\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	config, err := Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	servers, err := ResolveServers(config, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(servers) != 2 || servers[0].Alias != "included" || servers[1].Alias != "root" {
+		t.Fatalf("servers = %#v", servers)
+	}
+	if servers[0].Host != "included.example.com" || servers[0].Port != 2202 {
+		t.Fatalf("included server = %#v", servers[0])
+	}
+}
+
+func TestIncludeGlobUsesLexicalOrder(t *testing.T) {
+	dir := t.TempDir()
+	root := filepath.Join(dir, "config")
+	includes := filepath.Join(dir, "config.d")
+	if err := os.MkdirAll(includes, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(root, []byte("Include config.d/*.conf\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(includes, "b.conf"), []byte("Host b\n  HostName b.example.com\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(includes, "a.conf"), []byte("Host a\n  HostName a.example.com\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	config, err := Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	servers, err := ResolveServers(config, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(servers) != 2 || servers[0].Alias != "a" || servers[1].Alias != "b" {
+		t.Fatalf("servers = %#v", servers)
+	}
+}
+
+func TestEditIncludedServerWritesIncludedFile(t *testing.T) {
+	dir := t.TempDir()
+	root := filepath.Join(dir, "config")
+	included := filepath.Join(dir, "hosts.conf")
+	if err := os.WriteFile(root, []byte("Include hosts.conf\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(included, []byte("Host old\n  HostName old.example.com\n  Port 22\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	config, err := Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	updated := domain.Server{Alias: "new", Host: "new.example.com", User: "deploy", Port: 2203}
+	if err := EditServer(config, "old", updated); err != nil {
+		t.Fatal(err)
+	}
+	rootData, err := os.ReadFile(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(rootData) != "Include hosts.conf\n" {
+		t.Fatalf("root content = %q", rootData)
+	}
+	includedData, err := os.ReadFile(included)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := "Host new\n  HostName new.example.com\n  Port 2203\n  User deploy\n"
+	if string(includedData) != want {
+		t.Fatalf("included content = %q, want %q", includedData, want)
+	}
+}
+
+func TestDeleteIncludedServerWritesIncludedFile(t *testing.T) {
+	dir := t.TempDir()
+	root := filepath.Join(dir, "config")
+	included := filepath.Join(dir, "hosts.conf")
+	if err := os.WriteFile(root, []byte("Include hosts.conf\nHost root\n  HostName root.example.com\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(included, []byte("Host doomed\n  HostName doomed.example.com\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	config, err := Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := DeleteServer(config, "doomed"); err != nil {
+		t.Fatal(err)
+	}
+	includedData, err := os.ReadFile(included)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(includedData) != "" {
+		t.Fatalf("included content = %q, want empty", includedData)
+	}
+	rootData, err := os.ReadFile(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(rootData), "Host root") {
+		t.Fatalf("root content was modified incorrectly: %q", rootData)
+	}
+}
+
+func TestAddServerWritesRootWhenIncludesExist(t *testing.T) {
+	dir := t.TempDir()
+	root := filepath.Join(dir, "config")
+	included := filepath.Join(dir, "hosts.conf")
+	if err := os.WriteFile(root, []byte("Include hosts.conf\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(included, []byte("Host included\n  HostName included.example.com\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	config, err := Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	server := domain.Server{Alias: "added", Host: "added.example.com", Port: 22}
+	if err := AddServer(config, server); err != nil {
+		t.Fatal(err)
+	}
+	rootData, err := os.ReadFile(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantRoot := "Include hosts.conf\n\nHost added\n  HostName added.example.com\n  Port 22\n"
+	if string(rootData) != wantRoot {
+		t.Fatalf("root content = %q, want %q", rootData, wantRoot)
+	}
+	includedData, err := os.ReadFile(included)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(includedData) != "Host included\n  HostName included.example.com\n" {
+		t.Fatalf("included content = %q", includedData)
+	}
+}
