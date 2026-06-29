@@ -17,7 +17,6 @@ const (
 )
 
 const (
-	MsgUsage               = "usage"
 	MsgFilterPlaceholder   = "filter.placeholder"
 	MsgHelpAdd             = "help.add"
 	MsgHelpEdit            = "help.edit"
@@ -64,6 +63,20 @@ const (
 	MsgDetailsUseCount     = "details.use_count"
 	MsgDetailsNone         = "details.none"
 	MsgDetailsNever        = "details.never"
+	MsgHelpTitle           = "help.title"
+	MsgHelpSubtitle        = "help.subtitle"
+	MsgHelpUsageHeader     = "help.usage_header"
+	MsgHelpUsage           = "help.usage"
+	MsgHelpFlags           = "help.flags"
+	MsgHelpLanguageFlag    = "help.language_flag"
+	MsgHelpPathFlag        = "help.path_flag"
+	MsgHelpHelpFlag        = "help.help_flag"
+	MsgPathAddChanged      = "path.added"
+	MsgPathAddUnchanged    = "path.added_unchanged"
+	MsgPathRemoveChanged   = "path.removed"
+	MsgPathRemoveUnchanged = "path.removed_unchanged"
+	MsgPathSessionHint     = "path.session_hint"
+	MsgPathSessionCommand  = "path.session_command"
 	MsgStatusOnline        = "status.online"
 	MsgStatusOffline       = "status.offline"
 	MsgStatusUnknown       = "status.unknown"
@@ -150,7 +163,6 @@ func (t Translator) Error(err error) string {
 }
 
 var english = map[string]string{
-	MsgUsage:               "Usage: hop [--language en|ru]\n\nOptions:\n  --language en|ru  Interface language; defaults to the current locale\n  -h, --help        Show this help",
 	MsgFilterPlaceholder:   "start typing…",
 	MsgHelpAdd:             "add",
 	MsgHelpEdit:            "edit",
@@ -197,6 +209,20 @@ var english = map[string]string{
 	MsgDetailsUseCount:     "Uses",
 	MsgDetailsNone:         "none",
 	MsgDetailsNever:        "never",
+	MsgHelpTitle:           "hop",
+	MsgHelpSubtitle:        "minimal SSH manager",
+	MsgHelpUsageHeader:     "Usage",
+	MsgHelpUsage:           "Usage: hop [--language en|ru] [--path add|remove] [--help]",
+	MsgHelpFlags:           "Flags",
+	MsgHelpLanguageFlag:    "Interface language; defaults to the current locale.",
+	MsgHelpPathFlag:        "Add or remove the hop binary directory in PATH.",
+	MsgHelpHelpFlag:        "Show this help and exit.",
+	MsgPathAddChanged:      "PATH added",
+	MsgPathAddUnchanged:    "PATH already set",
+	MsgPathRemoveChanged:   "PATH removed",
+	MsgPathRemoveUnchanged: "PATH not set",
+	MsgPathSessionHint:     "Refresh PowerShell if needed",
+	MsgPathSessionCommand:  "$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')",
 	MsgStatusOnline:        "online",
 	MsgStatusOffline:       "offline",
 	MsgStatusUnknown:       "checking",
@@ -208,6 +234,11 @@ var english = map[string]string{
 	apperr.ErrInvalidLanguage:     "Unsupported interface language %q. Use en or ru.",
 	apperr.ErrMissingLanguage:     "The --language flag requires en or ru.",
 	apperr.ErrUnknownArgument:     "Unknown argument %q.",
+	apperr.ErrMissingPathAction:   "The --path flag requires add or remove.",
+	apperr.ErrInvalidPathAction:   "Unsupported PATH action %q. Use add or remove.",
+	apperr.ErrPathUnsupported:     "PATH management is not supported on this platform.",
+	apperr.ErrPathExecutable:      "Could not determine the hop executable path.",
+	apperr.ErrPathUpdate:          "Could not update PATH.",
 	apperr.ErrCreateDirectory:     "Could not create directory %q.",
 	apperr.ErrReadSSHConfig:       "Could not read SSH config %q.",
 	apperr.ErrStatSSHConfig:       "Could not inspect SSH config %q.",
@@ -236,7 +267,6 @@ var english = map[string]string{
 }
 
 var russian = map[string]string{
-	MsgUsage:               "Использование: hop [--language en|ru]\n\nПараметры:\n  --language en|ru  Язык интерфейса; по умолчанию определяется по локали\n  -h, --help        Показать эту справку",
 	MsgFilterPlaceholder:   "начни печатать…",
 	MsgHelpAdd:             "добавить",
 	MsgHelpEdit:            "изменить",
@@ -283,6 +313,20 @@ var russian = map[string]string{
 	MsgDetailsUseCount:     "Раз",
 	MsgDetailsNone:         "нет",
 	MsgDetailsNever:        "никогда",
+	MsgHelpTitle:           "hop",
+	MsgHelpSubtitle:        "минималистичный SSH-менеджер",
+	MsgHelpUsageHeader:     "Использование",
+	MsgHelpUsage:           "Использование: hop [--language en|ru] [--path add|remove] [--help]",
+	MsgHelpFlags:           "Флаги",
+	MsgHelpLanguageFlag:    "Язык интерфейса; по умолчанию определяется по локали.",
+	MsgHelpPathFlag:        "Добавить или удалить каталог hop из PATH.",
+	MsgHelpHelpFlag:        "Показать эту справку и выйти.",
+	MsgPathAddChanged:      "PATH добавлен",
+	MsgPathAddUnchanged:    "PATH уже настроен",
+	MsgPathRemoveChanged:   "PATH удалён",
+	MsgPathRemoveUnchanged: "PATH не найден",
+	MsgPathSessionHint:     "Обнови PowerShell, если нужно",
+	MsgPathSessionCommand:  "$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')",
 	MsgStatusOnline:        "доступен",
 	MsgStatusOffline:       "недоступен",
 	MsgStatusUnknown:       "проверка",
@@ -294,6 +338,11 @@ var russian = map[string]string{
 	apperr.ErrInvalidLanguage:     "Язык интерфейса %q не поддерживается. Используйте en или ru.",
 	apperr.ErrMissingLanguage:     "Для флага --language требуется значение en или ru.",
 	apperr.ErrUnknownArgument:     "Неизвестный аргумент %q.",
+	apperr.ErrMissingPathAction:   "Для флага --path нужно указать add или remove.",
+	apperr.ErrInvalidPathAction:   "Действие PATH %q не поддерживается. Используйте add или remove.",
+	apperr.ErrPathUnsupported:     "Управление PATH не поддерживается на этой платформе.",
+	apperr.ErrPathExecutable:      "Не удалось определить путь к исполняемому файлу hop.",
+	apperr.ErrPathUpdate:          "Не удалось обновить PATH.",
 	apperr.ErrCreateDirectory:     "Не удалось создать каталог %q.",
 	apperr.ErrReadSSHConfig:       "Не удалось прочитать SSH-конфиг %q.",
 	apperr.ErrStatSSHConfig:       "Не удалось получить сведения об SSH-конфиге %q.",

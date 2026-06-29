@@ -7,17 +7,31 @@ import (
 	"hop/internal/app"
 	"hop/internal/cli"
 	"hop/internal/i18n"
+	"hop/internal/pathenv"
 )
 
 func main() {
 	options, err := cli.Parse(os.Args[1:], os.Getenv)
 	translator := i18n.New(options.Language)
 	if err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, translator.Error(err))
+		_, _ = fmt.Fprintln(os.Stderr, cli.RenderError(translator, err))
 		os.Exit(2)
 	}
+	if options.Help {
+		_, _ = fmt.Fprintln(os.Stdout, cli.RenderHelp(translator))
+		return
+	}
+	if options.Path != cli.PathActionNone {
+		result, err := pathenv.Apply(pathenv.Action(options.Path))
+		if err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, cli.RenderError(translator, err))
+			os.Exit(1)
+		}
+		_, _ = fmt.Fprintln(os.Stdout, cli.RenderPathResult(translator, options.Path, result.Directory, result.Changed))
+		return
+	}
 	if err := app.Run(translator, os.Stderr); err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, translator.Error(err))
+		_, _ = fmt.Fprintln(os.Stderr, cli.RenderError(translator, err))
 		os.Exit(1)
 	}
 }

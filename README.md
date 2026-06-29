@@ -27,8 +27,17 @@ just build
 
 ```bash
 hop
+hop --help
 hop --language en
 hop --language ru
+hop --path add
+hop --path remove
+```
+
+If you change PATH in PowerShell and want the current session to pick it up without reopening the shell:
+
+```powershell
+$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')
 ```
 
 | Клавиша | Действие |
