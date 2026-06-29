@@ -302,6 +302,9 @@ func (model *Model) resizeList() {
 	if model.showHelp {
 		extra += 5
 	}
+	if !model.showDetailsPanel() {
+		extra++
+	}
 	if model.errorText != "" {
 		extra += 2
 	}
