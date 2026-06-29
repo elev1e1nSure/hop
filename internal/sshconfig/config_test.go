@@ -113,12 +113,8 @@ func TestEqualsSyntaxIsParsed(t *testing.T) {
 	}
 }
 
-func TestLoadWrapsInaccessiblePath(t *testing.T) {
-	parent := filepath.Join(t.TempDir(), "not-a-directory")
-	if err := os.WriteFile(parent, []byte("x"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	_, err := Load(filepath.Join(parent, "config"))
+func TestLoadOnDirectory(t *testing.T) {
+	_, err := Load(t.TempDir())
 	var appErr *apperr.Error
 	if !errors.As(err, &appErr) || appErr.Key != apperr.ErrReadSSHConfig {
 		t.Fatalf("error = %v, want %s", err, apperr.ErrReadSSHConfig)
