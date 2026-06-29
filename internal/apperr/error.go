@@ -31,7 +31,6 @@ const (
 	ErrCloseTemporaryFile  = "error.close_temporary_file"
 	ErrReplaceFile         = "error.replace_file"
 	ErrSSHUnavailable      = "error.ssh_unavailable"
-	ErrSSHHomeDir          = "error.ssh_home_dir"
 	ErrSSHStart            = "error.ssh_start"
 	ErrSSHExit             = "error.ssh_exit"
 	ErrTUI                 = "error.tui"
