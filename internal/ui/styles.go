@@ -37,6 +37,11 @@ var (
 
 	filterBackground = lipgloss.Color("#1E1E1E")
 	filterBoxStyle   = lipgloss.NewStyle().Background(filterBackground).PaddingRight(1)
+
+	panelFrameStyle = lipgloss.NewStyle().Border(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("#2C2C34")).Padding(0, 1)
+	panelTitleStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2A878")).Bold(true)
+	panelLabelStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#7A7A82"))
+	panelValueStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#DCDCDC"))
 )
 
 type rowItem struct {

@@ -27,6 +27,12 @@ const (
 	modeConnecting
 )
 
+const (
+	detailsPanelMinWidth = 96
+	detailsPanelWidth    = 32
+	detailsPanelGap      = 2
+)
+
 type Result struct {
 	Connect *domain.Server
 	Binary  string
@@ -299,7 +305,19 @@ func (model *Model) resizeList() {
 	if model.errorText != "" {
 		extra += 2
 	}
-	model.list.SetSize(model.width, util.Max(3, model.height-extra))
+	model.list.SetSize(model.listWidth(), util.Max(3, model.height-extra))
+}
+
+func (model Model) showDetailsPanel() bool {
+	return model.width >= detailsPanelMinWidth
+}
+
+func (model Model) listWidth() int {
+	if !model.showDetailsPanel() {
+		return model.width
+	}
+	available := model.width - detailsPanelWidth - detailsPanelGap
+	return util.Max(30, available)
 }
 
 func (model *Model) resizeForm() {

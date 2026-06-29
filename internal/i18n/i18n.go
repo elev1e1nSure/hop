@@ -53,6 +53,21 @@ const (
 	MsgValidationHost      = "validation.host"
 	MsgValidationPort      = "validation.port"
 	MsgValidationDuplicate = "validation.duplicate"
+	MsgDetailsTitle        = "details.title"
+	MsgDetailsHost         = "details.host"
+	MsgDetailsUser         = "details.user"
+	MsgDetailsPort         = "details.port"
+	MsgDetailsIdentity     = "details.identity"
+	MsgDetailsProxy        = "details.proxy"
+	MsgDetailsStatus       = "details.status"
+	MsgDetailsLastUsed     = "details.last_used"
+	MsgDetailsUseCount     = "details.use_count"
+	MsgDetailsNone         = "details.none"
+	MsgDetailsNever        = "details.never"
+	MsgStatusOnline        = "status.online"
+	MsgStatusOffline       = "status.offline"
+	MsgStatusUnknown       = "status.unknown"
+	MsgStatusProxy         = "status.proxy"
 )
 
 type Translator struct {
@@ -171,6 +186,21 @@ var english = map[string]string{
 	MsgValidationHost:      "Host is required.",
 	MsgValidationPort:      "Port must be an integer from 1 to 65535.",
 	MsgValidationDuplicate: "A server with that name already exists.",
+	MsgDetailsTitle:        "selected",
+	MsgDetailsHost:         "Host",
+	MsgDetailsUser:         "User",
+	MsgDetailsPort:         "Port",
+	MsgDetailsIdentity:     "Identity",
+	MsgDetailsProxy:        "Proxy",
+	MsgDetailsStatus:       "Status",
+	MsgDetailsLastUsed:     "Last used",
+	MsgDetailsUseCount:     "Uses",
+	MsgDetailsNone:         "none",
+	MsgDetailsNever:        "never",
+	MsgStatusOnline:        "online",
+	MsgStatusOffline:       "offline",
+	MsgStatusUnknown:       "checking",
+	MsgStatusProxy:         "via proxy",
 
 	apperr.ErrHomeDir:             "Could not determine the user home directory.",
 	apperr.ErrPermissionDenied:    "Permission denied for %q.",
@@ -242,6 +272,21 @@ var russian = map[string]string{
 	MsgValidationHost:      "Хост обязателен.",
 	MsgValidationPort:      "Порт должен быть целым числом от 1 до 65535.",
 	MsgValidationDuplicate: "Сервер с таким именем уже существует.",
+	MsgDetailsTitle:        "выбрано",
+	MsgDetailsHost:         "Хост",
+	MsgDetailsUser:         "Пользователь",
+	MsgDetailsPort:         "Порт",
+	MsgDetailsIdentity:     "Ключ",
+	MsgDetailsProxy:        "Прокси",
+	MsgDetailsStatus:       "Статус",
+	MsgDetailsLastUsed:     "Был",
+	MsgDetailsUseCount:     "Раз",
+	MsgDetailsNone:         "нет",
+	MsgDetailsNever:        "никогда",
+	MsgStatusOnline:        "доступен",
+	MsgStatusOffline:       "недоступен",
+	MsgStatusUnknown:       "проверка",
+	MsgStatusProxy:         "через прокси",
 
 	apperr.ErrHomeDir:             "Не удалось определить домашний каталог пользователя.",
 	apperr.ErrPermissionDenied:    "Недостаточно прав для доступа к %q.",
