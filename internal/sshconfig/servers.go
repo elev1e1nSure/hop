@@ -256,6 +256,9 @@ func renderUpdatedBlock(lines []string, block Block, server domain.Server) []str
 			continue
 		}
 		if seen[key] {
+			if key == "identityfile" {
+				body = append(body, line)
+			}
 			continue
 		}
 		seen[key] = true
