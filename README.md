@@ -5,6 +5,7 @@
 
 <p align="center">
   <a href="https://github.com/elev1e1nSure/hop/releases"><img src="https://img.shields.io/github/v/release/elev1e1nSure/hop?color=teal" alt="release"></a>
+  <a href="https://elev1e1nsure.github.io/hop-site/"><img src="https://img.shields.io/badge/site-hop--site-d98e48" alt="website"></a>
   <a href="https://github.com/elev1e1nSure/hop/releases"><img src="https://img.shields.io/github/downloads/elev1e1nSure/hop/total" alt="downloads"></a>
   <img src="https://img.shields.io/github/go-mod/go-version/elev1e1nSure/hop?color=blue" alt="go version">
   <a href="https://goreportcard.com/report/github.com/elev1e1nSure/hop"><img src="https://goreportcard.com/badge/github.com/elev1e1nSure/hop" alt="go report"></a>
@@ -14,8 +15,14 @@
 <p align="center">
   <img src="assets/screenshot.png" alt="hop screenshot" width="720">
   <br>
-  <sup>terminal screenshot — replace <code>screenshot.png</code> with your own</sup>
+  <sup>terminal-first SSH host management</sup>
 </p>
+
+## Links
+
+- Website: https://elev1e1nsure.github.io/hop-site/
+- Landing page repository: https://github.com/elev1e1nSure/hop-site
+- Releases: https://github.com/elev1e1nSure/hop/releases
 
 ## Features
 
