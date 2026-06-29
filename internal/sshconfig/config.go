@@ -99,3 +99,12 @@ func (config *Config) write() error {
 	}
 	return nil
 }
+
+func (config *Config) syncFromDisk() error {
+	fresh, err := Load(config.Path)
+	if err != nil {
+		return err
+	}
+	*config = *fresh
+	return nil
+}

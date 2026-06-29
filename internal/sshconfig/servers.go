@@ -79,6 +79,9 @@ func ResolveServers(config *Config, records map[string]domain.HistoryRecord) ([]
 }
 
 func AddServer(config *Config, server domain.Server) error {
+	if err := config.syncFromDisk(); err != nil {
+		return err
+	}
 	saved := append([]string(nil), config.Lines...)
 	savedTrailing := config.HadTrailing
 
@@ -100,6 +103,9 @@ func AddServer(config *Config, server domain.Server) error {
 }
 
 func EditServer(config *Config, oldAlias string, updated domain.Server) error {
+	if err := config.syncFromDisk(); err != nil {
+		return err
+	}
 	blockIndex := findOriginBlock(config, oldAlias)
 	if blockIndex < 0 {
 		return apperr.New(apperr.ErrServerNotFound, oldAlias, config.Path)
@@ -142,6 +148,9 @@ func EditServer(config *Config, oldAlias string, updated domain.Server) error {
 }
 
 func DeleteServer(config *Config, alias string) error {
+	if err := config.syncFromDisk(); err != nil {
+		return err
+	}
 	blockIndex := findOriginBlock(config, alias)
 	if blockIndex < 0 {
 		return apperr.New(apperr.ErrServerNotFound, alias, config.Path)
