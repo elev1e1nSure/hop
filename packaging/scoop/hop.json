@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0-beta.1",
+  "description": "TUI SSH manager for browsing, editing, and connecting to SSH hosts.",
+  "homepage": "https://github.com/elev1e1nSure/hop",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/elev1e1nSure/hop/releases/download/v1.0.0-beta.1/hop_windows_amd64.zip",
+      "hash": "92694119cb258fa1b13e0584e50d79ea942234fae4cf615dcfd55163c6111a43",
+      "bin": [
+        "hop.exe"
+      ]
+    }
+  },
+  "bin": [
+    "hop.exe"
+  ],
+  "checkver": {
+    "github": "https://github.com/elev1e1nSure/hop"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/elev1e1nSure/hop/releases/download/v$version/hop_windows_amd64.zip"
+      }
+    }
+  }
+}
