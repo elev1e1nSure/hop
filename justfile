@@ -5,7 +5,7 @@ run language="":
     go run ./cmd/hop {{if language != "" { "--language " + language } else { "" }}}
 
 build:
-    go build -o hop ./cmd/hop
+    go build -o hop.exe ./cmd/hop
 
 test:
     go test ./...
