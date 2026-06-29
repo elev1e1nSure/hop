@@ -29,6 +29,7 @@ func ResolveServers(config *Config, records map[string]domain.HistoryRecord) ([]
 	servers := make([]domain.Server, 0, len(origins))
 	for _, origin := range origins {
 		values := map[string]DirectiveValue{}
+		hasProxy := false
 		for _, block := range config.Blocks {
 			if !hostBlockMatches(origin.alias, block.Hosts) {
 				continue
@@ -39,6 +40,12 @@ func ResolveServers(config *Config, records map[string]domain.HistoryRecord) ([]
 						values[key] = value
 					}
 				}
+			}
+			if _, ok := block.Values["proxyjump"]; ok {
+				hasProxy = true
+			}
+			if _, ok := block.Values["proxycommand"]; ok {
+				hasProxy = true
 			}
 		}
 
@@ -63,6 +70,7 @@ func ResolveServers(config *Config, records map[string]domain.HistoryRecord) ([]
 			Port:         port,
 			IdentityFile: values["identityfile"].Value,
 			BlockIndex:   origin.blockIndex,
+			HasProxy:     hasProxy,
 			LastUsed:     record.LastConnected,
 			UseCount:     record.Count,
 		})

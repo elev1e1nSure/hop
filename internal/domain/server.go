@@ -16,6 +16,7 @@ type Server struct {
 	BlockIndex   int
 	Checked      bool
 	Online       bool
+	HasProxy     bool
 	LastUsed     time.Time
 	UseCount     int
 }

@@ -10,9 +10,11 @@ import (
 
 	"sshm/internal/domain"
 	"sshm/internal/sshclient"
+	"sshm/internal/util"
 )
 
 const checkTimeout = 1500 * time.Millisecond
+const maxCheckConcurrency = 20
 
 type statusCheckMsg struct {
 	Alias  string
@@ -27,15 +29,22 @@ type connectReadyMsg struct {
 }
 
 func (model Model) checkAllCmd() tea.Cmd {
+	limit := util.Max(1, maxCheckConcurrency)
+	sem := make(chan struct{}, limit)
 	commands := make([]tea.Cmd, 0, len(model.servers))
 	for _, server := range model.servers {
-		commands = append(commands, checkServerCmd(server))
+		if server.HasProxy {
+			continue
+		}
+		commands = append(commands, checkServerCmd(server, sem))
 	}
 	return tea.Batch(commands...)
 }
 
-func checkServerCmd(server domain.Server) tea.Cmd {
+func checkServerCmd(server domain.Server, sem chan struct{}) tea.Cmd {
 	return func() tea.Msg {
+		sem <- struct{}{}
+		defer func() { <-sem }()
 		connection, err := net.DialTimeout("tcp", dialAddress(server), checkTimeout)
 		if err == nil {
 			_ = connection.Close()

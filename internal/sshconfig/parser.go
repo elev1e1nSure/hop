@@ -65,7 +65,7 @@ func parseBlocks(path string, lines []string) ([]Block, error) {
 				continue
 			}
 			switch key {
-			case "hostname", "user", "port", "identityfile":
+			case "hostname", "user", "port", "identityfile", "proxyjump", "proxycommand":
 				directiveLines[key] = append(directiveLines[key], index)
 				if _, exists := values[key]; !exists {
 					values[key] = DirectiveValue{Value: args[0], Line: index + 1}
@@ -86,7 +86,7 @@ func parseBlocks(path string, lines []string) ([]Block, error) {
 
 func requiresValue(key string) bool {
 	switch key {
-	case "host", "match", "hostname", "user", "port", "identityfile":
+	case "host", "match", "hostname", "user", "port", "identityfile", "proxyjump", "proxycommand":
 		return true
 	default:
 		return false
