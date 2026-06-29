@@ -8,11 +8,11 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"hop/internal/domain"
-	"hop/internal/history"
-	"hop/internal/i18n"
-	"hop/internal/sshconfig"
-	"hop/internal/util"
+	"github.com/elev1e1nSure/hop/internal/domain"
+	"github.com/elev1e1nSure/hop/internal/history"
+	"github.com/elev1e1nSure/hop/internal/i18n"
+	"github.com/elev1e1nSure/hop/internal/sshconfig"
+	"github.com/elev1e1nSure/hop/internal/util"
 )
 
 func (model Model) updateForm(message tea.Msg) (tea.Model, tea.Cmd) {

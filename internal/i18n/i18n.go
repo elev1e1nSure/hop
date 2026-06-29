@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/apperr"
 )
 
 type Language string
@@ -222,7 +222,7 @@ var english = map[string]string{
 	MsgPathRemoveChanged:   "PATH removed",
 	MsgPathRemoveUnchanged: "PATH not set",
 	MsgPathSessionHint:     "Refresh PowerShell if needed",
-	MsgPathSessionCommand:  "$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')",
+	MsgPathSessionCommand:  "$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine')\n  + ';' + [Environment]::GetEnvironmentVariable('Path','User')",
 	MsgStatusOnline:        "online",
 	MsgStatusOffline:       "offline",
 	MsgStatusUnknown:       "checking",
@@ -326,7 +326,7 @@ var russian = map[string]string{
 	MsgPathRemoveChanged:   "PATH удалён",
 	MsgPathRemoveUnchanged: "PATH не найден",
 	MsgPathSessionHint:     "Обнови PowerShell, если нужно",
-	MsgPathSessionCommand:  "$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')",
+	MsgPathSessionCommand:  "$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine')\n  + ';' + [Environment]::GetEnvironmentVariable('Path','User')",
 	MsgStatusOnline:        "доступен",
 	MsgStatusOffline:       "недоступен",
 	MsgStatusUnknown:       "проверка",

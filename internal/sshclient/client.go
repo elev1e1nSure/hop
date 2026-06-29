@@ -6,8 +6,8 @@ import (
 	"os"
 	"os/exec"
 
-	"hop/internal/apperr"
-	"hop/internal/domain"
+	"github.com/elev1e1nSure/hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/domain"
 )
 
 func Lookup() (string, error) {
@@ -50,4 +50,3 @@ func Run(binary string, server domain.Server) error {
 	}
 	return nil
 }
-

@@ -8,9 +8,9 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"hop/internal/domain"
-	"hop/internal/sshclient"
-	"hop/internal/util"
+	"github.com/elev1e1nSure/hop/internal/domain"
+	"github.com/elev1e1nSure/hop/internal/sshclient"
+	"github.com/elev1e1nSure/hop/internal/util"
 )
 
 const checkTimeout = 1500 * time.Millisecond

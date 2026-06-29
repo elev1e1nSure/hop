@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"hop/internal/apperr"
-	"hop/internal/i18n"
+	"github.com/elev1e1nSure/hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/i18n"
 )
 
 func TestParseUsesLocaleByDefault(t *testing.T) {

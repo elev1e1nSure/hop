@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"hop/internal/apperr"
-	"hop/internal/domain"
+	"github.com/elev1e1nSure/hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/domain"
 )
 
 func TestLoadMissingConfigReturnsEmptyConfig(t *testing.T) {

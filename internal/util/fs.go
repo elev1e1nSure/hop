@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/apperr"
 )
 
 func AtomicWrite(path string, data []byte, mode, dirMode os.FileMode) error {

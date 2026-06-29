@@ -10,7 +10,7 @@ import (
 
 	"golang.org/x/sys/windows/registry"
 
-	"hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/apperr"
 )
 
 const pathValueName = "Path"

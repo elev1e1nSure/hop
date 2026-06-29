@@ -5,7 +5,7 @@ package pathenv
 import (
 	"fmt"
 
-	"hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/apperr"
 )
 
 func Apply(action Action) (Result, error) {

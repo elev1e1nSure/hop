@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode"
 
-	"hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/apperr"
 )
 
 type boundary struct {

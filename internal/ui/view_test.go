@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"hop/internal/domain"
-	"hop/internal/i18n"
+	"github.com/elev1e1nSure/hop/internal/domain"
+	"github.com/elev1e1nSure/hop/internal/i18n"
 )
 
 func en() i18n.Translator { return i18n.New(i18n.English) }

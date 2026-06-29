@@ -1,4 +1,4 @@
-module hop
+module github.com/elev1e1nSure/hop
 
 go 1.23
 

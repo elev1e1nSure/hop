@@ -5,11 +5,11 @@ import (
 	"io"
 	"time"
 
-	"hop/internal/config"
-	"hop/internal/history"
-	"hop/internal/i18n"
-	"hop/internal/sshclient"
-	"hop/internal/ui"
+	"github.com/elev1e1nSure/hop/internal/config"
+	"github.com/elev1e1nSure/hop/internal/history"
+	"github.com/elev1e1nSure/hop/internal/i18n"
+	"github.com/elev1e1nSure/hop/internal/sshclient"
+	"github.com/elev1e1nSure/hop/internal/ui"
 )
 
 func Run(translator i18n.Translator, stderr io.Writer) error {

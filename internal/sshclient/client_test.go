@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/apperr"
 )
 
 func TestLookupUnavailable(t *testing.T) {

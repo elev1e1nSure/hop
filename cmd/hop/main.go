@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"hop/internal/app"
-	"hop/internal/cli"
-	"hop/internal/i18n"
-	"hop/internal/pathenv"
+	"github.com/elev1e1nSure/hop/internal/app"
+	"github.com/elev1e1nSure/hop/internal/cli"
+	"github.com/elev1e1nSure/hop/internal/i18n"
+	"github.com/elev1e1nSure/hop/internal/pathenv"
 )
 
 func main() {

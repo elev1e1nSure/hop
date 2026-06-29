@@ -11,8 +11,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"hop/internal/domain"
-	"hop/internal/util"
+	"github.com/elev1e1nSure/hop/internal/domain"
+	"github.com/elev1e1nSure/hop/internal/util"
 )
 
 const selectedBackground = lipgloss.Color("#3A2A22")

@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/apperr"
 )
 
 func TestCatalogsContainSameKeys(t *testing.T) {

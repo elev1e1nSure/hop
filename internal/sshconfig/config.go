@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"hop/internal/apperr"
-	"hop/internal/util"
+	"github.com/elev1e1nSure/hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/util"
 )
 
 type DirectiveValue struct {

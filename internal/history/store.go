@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"os"
 
-	"hop/internal/apperr"
-	"hop/internal/domain"
-	"hop/internal/util"
+	"github.com/elev1e1nSure/hop/internal/apperr"
+	"github.com/elev1e1nSure/hop/internal/domain"
+	"github.com/elev1e1nSure/hop/internal/util"
 )
 
 type file struct {

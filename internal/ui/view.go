@@ -6,9 +6,9 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 
-	"hop/internal/domain"
-	"hop/internal/i18n"
-	"hop/internal/util"
+	"github.com/elev1e1nSure/hop/internal/domain"
+	"github.com/elev1e1nSure/hop/internal/i18n"
+	"github.com/elev1e1nSure/hop/internal/util"
 )
 
 func (model Model) View() string {
