@@ -50,3 +50,15 @@ func Max(a, b int) int {
 	}
 	return b
 }
+
+func Sanitize(s string) string {
+	var b strings.Builder
+	b.Grow(len(s))
+	for _, r := range s {
+		if r < 0x20 || r == 0x7F || (r >= 0x80 && r <= 0x9F) {
+			continue
+		}
+		b.WriteRune(r)
+	}
+	return b.String()
+}

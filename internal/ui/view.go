@@ -95,7 +95,7 @@ func (model Model) footerView() string {
 func (model Model) formView() string {
 	title := model.translator.T(i18n.MsgFormAddTitle)
 	if model.editing {
-		title = model.translator.T(i18n.MsgFormEditTitle, model.editAlias)
+		title = model.translator.T(i18n.MsgFormEditTitle, util.Sanitize(model.editAlias))
 	}
 	lines := []string{"", "  " + accentStyle.Render(title), ""}
 	labels := []string{
@@ -131,7 +131,7 @@ func (model Model) confirmView() string {
 		"",
 		"  " + accentStyle.Render(model.translator.T(i18n.MsgDeleteTitle)),
 		"",
-		"  " + metaStyle.Render(model.confirmFor) + dimStyle.Render(model.translator.T(i18n.MsgDeleteFrom, model.configPath)),
+		"  " + metaStyle.Render(util.Sanitize(model.confirmFor)) + dimStyle.Render(model.translator.T(i18n.MsgDeleteFrom, model.configPath)),
 		"",
 		"  " + strings.Join([]string{
 			keycap("y", model.translator.T(i18n.MsgDeleteAction)),
@@ -143,7 +143,7 @@ func (model Model) confirmView() string {
 func (model Model) connectingView() string {
 	alias := model.translator.T(i18n.MsgConnectingFallback)
 	if server, ok := model.selectedServer(); ok {
-		alias = server.Alias
+		alias = util.Sanitize(server.Alias)
 	}
 	return strings.Join([]string{
 		"",

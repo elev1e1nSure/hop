@@ -64,9 +64,9 @@ func (rowDelegate) Render(writer io.Writer, model list.Model, index int, item li
 	}
 
 	selected := index == model.Index()
-	target := row.Server.Host
+	target := util.Sanitize(row.Server.Host)
 	if row.Server.User != "" {
-		target = row.Server.User + "@" + target
+		target = util.Sanitize(row.Server.User) + "@" + target
 	}
 	if row.Server.Port != 22 {
 		target += ":" + strconv.Itoa(row.Server.Port)
@@ -75,7 +75,7 @@ func (rowDelegate) Render(writer io.Writer, model list.Model, index int, item li
 
 	const padding = 2
 	const statusWidth = 2
-	alias := row.Server.Alias
+	alias := util.Sanitize(row.Server.Alias)
 	available := width - padding*2 - statusWidth
 	if utf8.RuneCountInString(alias)+1+utf8.RuneCountInString(metadata) > available {
 		metadataMax := util.Max(0, available-utf8.RuneCountInString(alias)-1)
