@@ -7,8 +7,8 @@ See [CLAUDE.md](./CLAUDE.md) for full project context: architecture, conventions
 - Language: Go 1.23, module `hop`
 - Entry point: `cmd/hop/main.go`
 - TUI framework: Bubble Tea (`bubbletea` + `bubbles` + `lipgloss`)
-- Run: `go run ./cmd/hop`
-- Test: `go test ./...`
+- Run: `just run`
+- Test: `just test`
 
 ## Critical rules
 

@@ -51,9 +51,12 @@ internal/util/      — fs helpers (AtomicWrite with symlink resolution), fuzzy 
 ## Running
 
 ```bash
-go run ./cmd/hop
-go run ./cmd/hop --language ru
-go run ./cmd/hop --language en
+just run          # auto-detect language
+just run ru       # Russian
+just run en       # English
+just build        # compile binary
+just lint         # go vet
+just fmt          # gofmt + golines
 ```
 
 Language auto-detected from `LC_ALL` / `LC_MESSAGES` / `LANG`; falls back to English.
@@ -61,7 +64,7 @@ Language auto-detected from `LC_ALL` / `LC_MESSAGES` / `LANG`; falls back to Eng
 ## Tests
 
 ```bash
-go test ./...
+just test
 ```
 
 Tests exist for: `cli`, `sshclient`, `history`, `sshconfig`, `i18n`. No TUI tests.

@@ -20,7 +20,7 @@ go install hop/cmd/hop@latest
 или собрать локально:
 
 ```bash
-go build -o hop ./cmd/hop
+just build
 ```
 
 ## Использование
