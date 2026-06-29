@@ -6,8 +6,8 @@ import (
 	"strings"
 	"unicode"
 
-	"sshm/internal/apperr"
-	"sshm/internal/domain"
+	"hop/internal/apperr"
+	"hop/internal/domain"
 )
 
 func ResolveServers(config *Config, records map[string]domain.HistoryRecord) ([]domain.Server, error) {

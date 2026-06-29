@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode"
 
-	"sshm/internal/apperr"
+	"hop/internal/apperr"
 )
 
 type boundary struct {

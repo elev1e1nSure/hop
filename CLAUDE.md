@@ -1,17 +1,17 @@
-# sshm
+# hop
 
 TUI SSH manager written in Go. Reads `~/.ssh/config`, lets you browse, filter, add, edit, delete servers, and connect to them. Built with Bubble Tea (charmbracelet stack).
 
 ## Stack
 
-- Go 1.23, module name `sshm`
+- Go 1.23, module name `hop`
 - TUI: `bubbletea` + `bubbles` (list, textinput, spinner) + `lipgloss`
 - No external state, no database — `~/.ssh/config` is the source of truth; history is a separate JSON file
 
 ## Architecture
 
 ```
-cmd/sshm/        — entry point; parses CLI args, wires translator, calls app.Run
+cmd/hop/        — entry point; parses CLI args, wires translator, calls app.Run
 internal/app/    — main loop: run UI → connect → save history → repeat
 internal/cli/    — flag parsing (--language)
 internal/config/ — XDG/OS-aware paths for ssh config and history file
@@ -51,9 +51,9 @@ internal/util/      — fs helpers (AtomicWrite with symlink resolution), fuzzy 
 ## Running
 
 ```bash
-go run ./cmd/sshm
-go run ./cmd/sshm --language ru
-go run ./cmd/sshm --language en
+go run ./cmd/hop
+go run ./cmd/hop --language ru
+go run ./cmd/hop --language en
 ```
 
 Language auto-detected from `LC_ALL` / `LC_MESSAGES` / `LANG`; falls back to English.

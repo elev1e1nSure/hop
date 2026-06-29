@@ -5,8 +5,8 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 
-	"sshm/internal/i18n"
-	"sshm/internal/util"
+	"hop/internal/i18n"
+	"hop/internal/util"
 )
 
 func (model Model) View() string {

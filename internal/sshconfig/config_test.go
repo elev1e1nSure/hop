@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"sshm/internal/apperr"
-	"sshm/internal/domain"
+	"hop/internal/apperr"
+	"hop/internal/domain"
 )
 
 func TestLoadMissingConfigReturnsEmptyConfig(t *testing.T) {

@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"sshm/internal/apperr"
+	"hop/internal/apperr"
 )
 
-const AppName = "sshm"
+const AppName = "hop"
 
 type Paths struct {
 	SSHConfig string

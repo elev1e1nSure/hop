@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"sshm/internal/app"
-	"sshm/internal/cli"
-	"sshm/internal/i18n"
+	"hop/internal/app"
+	"hop/internal/cli"
+	"hop/internal/i18n"
 )
 
 func main() {

@@ -1,6 +1,6 @@
 # Build output
-sshm
-sshm.exe
+/hop
+/hop.exe
 /dist/
 
 # Go

@@ -6,8 +6,8 @@ import (
 	"os"
 	"os/exec"
 
-	"sshm/internal/apperr"
-	"sshm/internal/domain"
+	"hop/internal/apperr"
+	"hop/internal/domain"
 )
 
 func Lookup() (string, error) {

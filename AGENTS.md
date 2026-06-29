@@ -4,10 +4,10 @@ See [CLAUDE.md](./CLAUDE.md) for full project context: architecture, conventions
 
 ## Quick reference
 
-- Language: Go 1.23, module `sshm`
-- Entry point: `cmd/sshm/main.go`
+- Language: Go 1.23, module `hop`
+- Entry point: `cmd/hop/main.go`
 - TUI framework: Bubble Tea (`bubbletea` + `bubbles` + `lipgloss`)
-- Run: `go run ./cmd/sshm`
+- Run: `go run ./cmd/hop`
 - Test: `go test ./...`
 
 ## Critical rules

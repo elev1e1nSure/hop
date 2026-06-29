@@ -8,9 +8,9 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"sshm/internal/domain"
-	"sshm/internal/sshclient"
-	"sshm/internal/util"
+	"hop/internal/domain"
+	"hop/internal/sshclient"
+	"hop/internal/util"
 )
 
 const checkTimeout = 1500 * time.Millisecond

@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"sshm/internal/apperr"
+	"hop/internal/apperr"
 )
 
 type Language string
@@ -135,7 +135,7 @@ func (t Translator) Error(err error) string {
 }
 
 var english = map[string]string{
-	MsgUsage:               "Usage: sshm [--language en|ru]\n\nOptions:\n  --language en|ru  Interface language; defaults to the current locale\n  -h, --help        Show this help",
+	MsgUsage:               "Usage: hop [--language en|ru]\n\nOptions:\n  --language en|ru  Interface language; defaults to the current locale\n  -h, --help        Show this help",
 	MsgFilterPlaceholder:   "start typing…",
 	MsgHelpAdd:             "add",
 	MsgHelpEdit:            "edit",
@@ -206,7 +206,7 @@ var english = map[string]string{
 }
 
 var russian = map[string]string{
-	MsgUsage:               "Использование: sshm [--language en|ru]\n\nПараметры:\n  --language en|ru  Язык интерфейса; по умолчанию определяется по локали\n  -h, --help        Показать эту справку",
+	MsgUsage:               "Использование: hop [--language en|ru]\n\nПараметры:\n  --language en|ru  Язык интерфейса; по умолчанию определяется по локали\n  -h, --help        Показать эту справку",
 	MsgFilterPlaceholder:   "начни печатать…",
 	MsgHelpAdd:             "добавить",
 	MsgHelpEdit:            "изменить",

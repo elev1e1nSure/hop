@@ -1,4 +1,4 @@
-module sshm
+module hop
 
 go 1.23
 

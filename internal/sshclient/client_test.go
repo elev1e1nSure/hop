@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"sshm/internal/apperr"
+	"hop/internal/apperr"
 )
 
 func TestLookupUnavailable(t *testing.T) {

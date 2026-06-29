@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"sshm/internal/apperr"
-	"sshm/internal/util"
+	"hop/internal/apperr"
+	"hop/internal/util"
 )
 
 type DirectiveValue struct {

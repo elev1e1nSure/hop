@@ -3,8 +3,8 @@ package cli
 import (
 	"strings"
 
-	"sshm/internal/apperr"
-	"sshm/internal/i18n"
+	"hop/internal/apperr"
+	"hop/internal/i18n"
 )
 
 type Options struct {

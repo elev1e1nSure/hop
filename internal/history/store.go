@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"os"
 
-	"sshm/internal/apperr"
-	"sshm/internal/domain"
-	"sshm/internal/util"
+	"hop/internal/apperr"
+	"hop/internal/domain"
+	"hop/internal/util"
 )
 
 type file struct {

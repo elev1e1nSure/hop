@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"sshm/internal/apperr"
+	"hop/internal/apperr"
 )
 
 func TestCatalogsContainSameKeys(t *testing.T) {

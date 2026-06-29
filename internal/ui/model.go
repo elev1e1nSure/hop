@@ -10,12 +10,12 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"sshm/internal/apperr"
-	"sshm/internal/domain"
-	"sshm/internal/history"
-	"sshm/internal/i18n"
-	"sshm/internal/sshconfig"
-	"sshm/internal/util"
+	"hop/internal/apperr"
+	"hop/internal/domain"
+	"hop/internal/history"
+	"hop/internal/i18n"
+	"hop/internal/sshconfig"
+	"hop/internal/util"
 )
 
 type appMode int

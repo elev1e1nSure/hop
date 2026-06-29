@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"sshm/internal/apperr"
+	"hop/internal/apperr"
 )
 
 func AtomicWrite(path string, data []byte, mode, dirMode os.FileMode) error {
@@ -24,7 +24,7 @@ func AtomicWrite(path string, data []byte, mode, dirMode os.FileMode) error {
 		return apperr.Wrap(apperr.ErrCreateDirectory, cause, dir)
 	}
 
-	tmp, err := os.CreateTemp(dir, ".sshm-*")
+	tmp, err := os.CreateTemp(dir, ".hop-*")
 	if err != nil {
 		cause := fmt.Errorf("create temporary file in %q: %w", dir, err)
 		return apperr.Wrap(apperr.ErrCreateTemporaryFile, cause, dir)

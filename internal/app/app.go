@@ -5,11 +5,11 @@ import (
 	"io"
 	"time"
 
-	"sshm/internal/config"
-	"sshm/internal/history"
-	"sshm/internal/i18n"
-	"sshm/internal/sshclient"
-	"sshm/internal/ui"
+	"hop/internal/config"
+	"hop/internal/history"
+	"hop/internal/i18n"
+	"hop/internal/sshclient"
+	"hop/internal/ui"
 )
 
 func Run(translator i18n.Translator, stderr io.Writer) error {
