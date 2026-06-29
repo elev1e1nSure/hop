@@ -105,56 +105,29 @@ func (model *Model) setFormFocus(index int) {
 }
 
 func (model Model) submitForm() (tea.Model, tea.Cmd) {
-	alias := strings.TrimSpace(model.form[0].Value())
-	host := strings.TrimSpace(model.form[1].Value())
-	user := strings.TrimSpace(model.form[2].Value())
-	portText := strings.TrimSpace(model.form[3].Value())
-	identity := strings.TrimSpace(model.form[4].Value())
-
-	if alias == "" || strings.ContainsAny(alias, " \t\r\n*?[]!") {
-		model.errorText = model.translator.T(i18n.MsgValidationAlias)
+	server, formErr := model.readFormServer()
+	if formErr != "" {
+		model.errorText = formErr
 		return model, nil
-	}
-	if host == "" {
-		model.errorText = model.translator.T(i18n.MsgValidationHost)
-		return model, nil
-	}
-	port, err := strconv.Atoi(portText)
-	if err != nil || port < 1 || port > 65535 {
-		model.errorText = model.translator.T(i18n.MsgValidationPort)
-		return model, nil
-	}
-	for _, server := range model.servers {
-		if server.Alias == alias && (!model.editing || alias != model.editAlias) {
-			model.errorText = model.translator.T(i18n.MsgValidationDuplicate)
-			return model, nil
-		}
 	}
 
-	updated := domain.Server{Alias: alias, Host: host, User: user, Port: port, IdentityFile: identity}
+	writeErr := model.applyFormServer(server)
+	if writeErr != nil {
+		model.errorText = model.translator.Error(writeErr)
+		return model, nil
+	}
+
 	var historyErr error
-	if model.editing {
-		if err := sshconfig.EditServer(model.config, model.editAlias, updated); err != nil {
-			model.errorText = model.translator.Error(err)
-			return model, nil
-		}
-		if alias != model.editAlias {
-			if record, ok := model.history[model.editAlias]; ok {
-				model.history[alias] = record
-				delete(model.history, model.editAlias)
-				historyErr = history.Save(model.historyPath, model.history)
-			}
-		}
-	} else {
-		if err := sshconfig.AddServer(model.config, updated); err != nil {
-			model.errorText = model.translator.Error(err)
-			return model, nil
+	if model.editing && server.Alias != model.editAlias {
+		if record, ok := model.history[model.editAlias]; ok {
+			model.history[server.Alias] = record
+			delete(model.history, model.editAlias)
+			historyErr = history.Save(model.historyPath, model.history)
 		}
 	}
 
-	reloadErr := model.reloadConfig(alias)
-	model.mode = modeBrowse
-	model.form = nil
+	reloadErr := model.reloadConfig(server.Alias)
+	model.closeForm()
 	switch {
 	case historyErr != nil:
 		model.errorText = model.translator.Error(historyErr)
@@ -165,4 +138,41 @@ func (model Model) submitForm() (tea.Model, tea.Cmd) {
 	}
 	model.resizeList()
 	return model, model.checkAllCmd()
+}
+
+func (model *Model) closeForm() {
+	model.mode = modeBrowse
+	model.form = nil
+}
+
+func (model Model) readFormServer() (domain.Server, string) {
+	alias := strings.TrimSpace(model.form[0].Value())
+	host := strings.TrimSpace(model.form[1].Value())
+	user := strings.TrimSpace(model.form[2].Value())
+	portText := strings.TrimSpace(model.form[3].Value())
+	identity := strings.TrimSpace(model.form[4].Value())
+
+	if alias == "" || strings.ContainsAny(alias, " \t\r\n*?[]!") {
+		return domain.Server{}, model.translator.T(i18n.MsgValidationAlias)
+	}
+	if host == "" {
+		return domain.Server{}, model.translator.T(i18n.MsgValidationHost)
+	}
+	port, err := strconv.Atoi(portText)
+	if err != nil || port < 1 || port > 65535 {
+		return domain.Server{}, model.translator.T(i18n.MsgValidationPort)
+	}
+	for _, server := range model.servers {
+		if server.Alias == alias && (!model.editing || alias != model.editAlias) {
+			return domain.Server{}, model.translator.T(i18n.MsgValidationDuplicate)
+		}
+	}
+	return domain.Server{Alias: alias, Host: host, User: user, Port: port, IdentityFile: identity}, ""
+}
+
+func (model *Model) applyFormServer(server domain.Server) error {
+	if model.editing {
+		return sshconfig.EditServer(model.config, model.editAlias, server)
+	}
+	return sshconfig.AddServer(model.config, server)
 }

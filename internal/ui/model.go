@@ -152,34 +152,9 @@ func (model Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		model.resizeForm()
 		return model, nil
 	case statusCheckMsg:
-		selected := model.selectedAlias()
-		for index := range model.servers {
-			if model.servers[index].Alias == message.Alias {
-				model.servers[index].Checked = true
-				model.servers[index].Online = message.Online
-				break
-			}
-		}
-		model.refreshItems(selected)
-		return model, nil
+		return model.handleStatusCheck(message)
 	case connectReadyMsg:
-		if message.Err != nil {
-			model.mode = modeBrowse
-			model.errorText = model.translator.Error(message.Err)
-			model.resizeList()
-			return model, nil
-		}
-		for index := range model.servers {
-			if model.servers[index].Alias == message.Server.Alias {
-				model.servers[index].Checked = true
-				model.servers[index].Online = message.Online
-				break
-			}
-		}
-		server := message.Server
-		model.connect = &server
-		model.binary = message.Binary
-		return model, tea.Quit
+		return model.handleConnectReady(message)
 	case spinner.TickMsg:
 		if model.mode == modeConnecting {
 			model.spinner, command = model.spinner.Update(message)
@@ -201,6 +176,39 @@ func (model Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 	default:
 		return model.updateBrowse(message)
 	}
+}
+
+func (model Model) handleStatusCheck(message statusCheckMsg) (tea.Model, tea.Cmd) {
+	selected := model.selectedAlias()
+	for index := range model.servers {
+		if model.servers[index].Alias == message.Alias {
+			model.servers[index].Checked = true
+			model.servers[index].Online = message.Online
+			break
+		}
+	}
+	model.refreshItems(selected)
+	return model, nil
+}
+
+func (model Model) handleConnectReady(message connectReadyMsg) (tea.Model, tea.Cmd) {
+	if message.Err != nil {
+		model.mode = modeBrowse
+		model.errorText = model.translator.Error(message.Err)
+		model.resizeList()
+		return model, nil
+	}
+	for index := range model.servers {
+		if model.servers[index].Alias == message.Server.Alias {
+			model.servers[index].Checked = true
+			model.servers[index].Online = message.Online
+			break
+		}
+	}
+	server := message.Server
+	model.connect = &server
+	model.binary = message.Binary
+	return model, tea.Quit
 }
 
 func (model Model) updateBrowse(message tea.Msg) (tea.Model, tea.Cmd) {

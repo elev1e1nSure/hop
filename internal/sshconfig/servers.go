@@ -10,14 +10,28 @@ import (
 	"github.com/elev1e1nSure/hop/internal/domain"
 )
 
+type aliasOrigin struct {
+	alias      string
+	blockIndex int
+}
+
 func ResolveServers(config *Config, records map[string]domain.HistoryRecord) ([]domain.Server, error) {
-	type aliasOrigin struct {
-		alias      string
-		blockIndex int
+	origins := collectOrigins(config.Blocks)
+	servers := make([]domain.Server, 0, len(origins))
+	for _, origin := range origins {
+		server, err := resolveServer(config, records, origin)
+		if err != nil {
+			return nil, err
+		}
+		servers = append(servers, server)
 	}
+	return servers, nil
+}
+
+func collectOrigins(blocks []Block) []aliasOrigin {
 	origins := make([]aliasOrigin, 0)
 	seen := map[string]bool{}
-	for index, block := range config.Blocks {
+	for index, block := range blocks {
 		for _, host := range block.Hosts {
 			if isConcreteAlias(host) && !seen[host] {
 				seen[host] = true
@@ -25,57 +39,71 @@ func ResolveServers(config *Config, records map[string]domain.HistoryRecord) ([]
 			}
 		}
 	}
+	return origins
+}
 
-	servers := make([]domain.Server, 0, len(origins))
-	for _, origin := range origins {
-		values := map[string]DirectiveValue{}
-		hasProxy := false
-		for _, block := range config.Blocks {
-			if !hostBlockMatches(origin.alias, block.Hosts) {
-				continue
-			}
-			for _, key := range []string{"hostname", "user", "port", "identityfile"} {
-				if _, exists := values[key]; !exists {
-					if value, ok := block.Values[key]; ok {
-						values[key] = value
-					}
+func resolveServer(config *Config, records map[string]domain.HistoryRecord, origin aliasOrigin) (domain.Server, error) {
+	values, hasProxy := resolveServerDirectives(config.Blocks, origin.alias)
+	host := resolveHostValue(values["hostname"].Value, origin.alias)
+	port, err := resolvePort(config.Path, values)
+	if err != nil {
+		return domain.Server{}, err
+	}
+	record := records[origin.alias]
+	return domain.Server{
+		Alias:        origin.alias,
+		Host:         host,
+		User:         values["user"].Value,
+		Port:         port,
+		IdentityFile: values["identityfile"].Value,
+		BlockIndex:   origin.blockIndex,
+		HasProxy:     hasProxy,
+		LastUsed:     record.LastConnected,
+		UseCount:     record.Count,
+	}, nil
+}
+
+func resolveServerDirectives(blocks []Block, alias string) (map[string]DirectiveValue, bool) {
+	values := map[string]DirectiveValue{}
+	hasProxy := false
+	for _, block := range blocks {
+		if !hostBlockMatches(alias, block.Hosts) {
+			continue
+		}
+		for _, key := range []string{"hostname", "user", "port", "identityfile"} {
+			if _, exists := values[key]; !exists {
+				if value, ok := block.Values[key]; ok {
+					values[key] = value
 				}
 			}
-			if _, ok := block.Values["proxyjump"]; ok {
-				hasProxy = true
-			}
-			if _, ok := block.Values["proxycommand"]; ok {
-				hasProxy = true
-			}
 		}
-
-		host := values["hostname"].Value
-		if host == "" || host == "%h" {
-			host = origin.alias
+		if _, ok := block.Values["proxyjump"]; ok {
+			hasProxy = true
 		}
-		host = strings.ReplaceAll(host, "%h", origin.alias)
-		port := 22
-		if raw, exists := values["port"]; exists {
-			parsed, err := strconv.Atoi(raw.Value)
-			if err != nil || parsed < 1 || parsed > 65535 {
-				return nil, apperr.New(apperr.ErrInvalidPortConfig, config.Path, raw.Value, raw.Line)
-			}
-			port = parsed
+		if _, ok := block.Values["proxycommand"]; ok {
+			hasProxy = true
 		}
-		record := records[origin.alias]
-		servers = append(servers, domain.Server{
-			Alias:        origin.alias,
-			Host:         host,
-			User:         values["user"].Value,
-			Port:         port,
-			IdentityFile: values["identityfile"].Value,
-			BlockIndex:   origin.blockIndex,
-			HasProxy:     hasProxy,
-			LastUsed:     record.LastConnected,
-			UseCount:     record.Count,
-		})
 	}
-	return servers, nil
+	return values, hasProxy
+}
+
+func resolveHostValue(hostname, alias string) string {
+	if hostname == "" || hostname == "%h" {
+		return alias
+	}
+	return strings.ReplaceAll(hostname, "%h", alias)
+}
+
+func resolvePort(configPath string, values map[string]DirectiveValue) (int, error) {
+	raw, exists := values["port"]
+	if !exists {
+		return 22, nil
+	}
+	parsed, err := strconv.Atoi(raw.Value)
+	if err != nil || parsed < 1 || parsed > 65535 {
+		return 0, apperr.New(apperr.ErrInvalidPortConfig, configPath, raw.Value, raw.Line)
+	}
+	return parsed, nil
 }
 
 func AddServer(config *Config, server domain.Server) error {

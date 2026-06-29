@@ -31,9 +31,6 @@ func RenderHelp(translator i18n.Translator) string {
 		helpFlagRow("--language en|ru", translator.T(i18n.MsgHelpLanguageFlag)),
 		helpFlagRow("--path add|remove", translator.T(i18n.MsgHelpPathFlag)),
 		helpFlagRow("-h, --help", translator.T(i18n.MsgHelpHelpFlag)),
-		"",
-		sectionStyle.Render(translator.T(i18n.MsgPathSessionHint)),
-		codeStyle.Render(translator.T(i18n.MsgPathSessionCommand)),
 	}
 	return strings.Join(lines, "\n")
 }

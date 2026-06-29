@@ -15,6 +15,14 @@ type boundary struct {
 }
 
 func parseBlocks(path string, lines []string) ([]Block, error) {
+	bounds, err := walkBoundaries(path, lines)
+	if err != nil {
+		return nil, err
+	}
+	return collectBlocks(path, lines, bounds)
+}
+
+func walkBoundaries(path string, lines []string) ([]boundary, error) {
 	bounds := make([]boundary, 0)
 	for index, line := range lines {
 		key, args, ok, err := parseDirective(line)
@@ -29,21 +37,31 @@ func parseBlocks(path string, lines []string) ([]Block, error) {
 		}
 		switch key {
 		case "host":
-			for _, pattern := range args {
-				candidate := strings.TrimPrefix(pattern, "!")
-				if candidate == "" {
-					return nil, apperr.New(apperr.ErrInvalidHostPattern, path, pattern, index+1)
-				}
-				if _, matchErr := filepath.Match(candidate, candidate); matchErr != nil {
-					return nil, apperr.New(apperr.ErrInvalidHostPattern, path, pattern, index+1)
-				}
+			if err := validateHostPatterns(path, args, index); err != nil {
+				return nil, err
 			}
 			bounds = append(bounds, boundary{line: index, kind: "host", hosts: args})
 		case "match":
 			bounds = append(bounds, boundary{line: index, kind: "match"})
 		}
 	}
+	return bounds, nil
+}
 
+func validateHostPatterns(path string, args []string, line int) error {
+	for _, pattern := range args {
+		candidate := strings.TrimPrefix(pattern, "!")
+		if candidate == "" {
+			return apperr.New(apperr.ErrInvalidHostPattern, path, pattern, line+1)
+		}
+		if _, matchErr := filepath.Match(candidate, candidate); matchErr != nil {
+			return apperr.New(apperr.ErrInvalidHostPattern, path, pattern, line+1)
+		}
+	}
+	return nil
+}
+
+func collectBlocks(path string, lines []string, bounds []boundary) ([]Block, error) {
 	blocks := make([]Block, 0)
 	for boundaryIndex, current := range bounds {
 		if current.kind != "host" {
@@ -53,24 +71,9 @@ func parseBlocks(path string, lines []string) ([]Block, error) {
 		if boundaryIndex+1 < len(bounds) {
 			end = bounds[boundaryIndex+1].line
 		}
-
-		values := map[string]DirectiveValue{}
-		directiveLines := map[string][]int{}
-		for index := current.line + 1; index < end; index++ {
-			key, args, ok, err := parseDirective(lines[index])
-			if err != nil {
-				return nil, apperr.New(apperr.ErrUnclosedQuote, path, index+1)
-			}
-			if !ok || len(args) == 0 {
-				continue
-			}
-			switch key {
-			case "hostname", "user", "port", "identityfile", "proxyjump", "proxycommand":
-				directiveLines[key] = append(directiveLines[key], index)
-				if _, exists := values[key]; !exists {
-					values[key] = DirectiveValue{Value: args[0], Line: index + 1}
-				}
-			}
+		values, directiveLines, err := readBlockDirectives(path, lines, current.line+1, end)
+		if err != nil {
+			return nil, err
 		}
 		blocks = append(blocks, Block{
 			Start:          current.line,
@@ -82,6 +85,28 @@ func parseBlocks(path string, lines []string) ([]Block, error) {
 		})
 	}
 	return blocks, nil
+}
+
+func readBlockDirectives(path string, lines []string, start, end int) (map[string]DirectiveValue, map[string][]int, error) {
+	values := map[string]DirectiveValue{}
+	directiveLines := map[string][]int{}
+	for index := start; index < end; index++ {
+		key, args, ok, err := parseDirective(lines[index])
+		if err != nil {
+			return nil, nil, apperr.New(apperr.ErrUnclosedQuote, path, index+1)
+		}
+		if !ok || len(args) == 0 {
+			continue
+		}
+		switch key {
+		case "hostname", "user", "port", "identityfile", "proxyjump", "proxycommand":
+			directiveLines[key] = append(directiveLines[key], index)
+			if _, exists := values[key]; !exists {
+				values[key] = DirectiveValue{Value: args[0], Line: index + 1}
+			}
+		}
+	}
+	return values, directiveLines, nil
 }
 
 func requiresValue(key string) bool {
