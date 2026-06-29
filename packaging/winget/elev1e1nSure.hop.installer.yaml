@@ -1,15 +1,15 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.10.0.schema.json
 
 PackageIdentifier: elev1e1nSure.hop
-PackageVersion: 1.0.0-beta.2
+PackageVersion: 1.0.0-beta.3
 InstallerType: zip
 NestedInstallerType: portable
 Commands:
   - hop
 Installers:
   - Architecture: x64
-    InstallerUrl: https://github.com/elev1e1nSure/hop/releases/download/v1.0.0-beta.2/hop_windows_amd64.zip
-    InstallerSha256: e4453f943acfad09dbb6573058d0e40a9f68495c193bb9fdbaa408b10f1ab675
+    InstallerUrl: https://github.com/elev1e1nSure/hop/releases/download/v1.0.0-beta.3/hop_windows_amd64.zip
+    InstallerSha256: d4856b652370559fa3b42af6cc31857a37bf5bc647af275f9321fadfda7b7b85
     NestedInstallerFiles:
       - RelativeFilePath: hop.exe
         PortableCommandAlias: hop
