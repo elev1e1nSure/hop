@@ -111,23 +111,38 @@ func (model Model) submitForm() (tea.Model, tea.Cmd) {
 		return model, nil
 	}
 
-	writeErr := model.applyFormServer(server)
-	if writeErr != nil {
-		model.errorText = model.translator.Error(writeErr)
+	if err := model.applyFormServer(server); err != nil {
+		model.errorText = model.translator.Error(err)
 		return model, nil
 	}
 
-	var historyErr error
-	if model.editing && server.Alias != model.editAlias {
-		if record, ok := model.history[model.editAlias]; ok {
-			model.history[server.Alias] = record
-			delete(model.history, model.editAlias)
-			historyErr = history.Save(model.historyPath, model.history)
-		}
-	}
-
+	historyErr := model.moveEditedHistory(server)
 	reloadErr := model.reloadConfig(server.Alias)
 	model.closeForm()
+	model.setSubmissionError(historyErr, reloadErr)
+	model.resizeList()
+	return model, model.checkAllCmd()
+}
+
+func (model Model) moveEditedHistory(server domain.Server) error {
+	if !model.editing || server.Alias == model.editAlias {
+		return nil
+	}
+	record, ok := model.history[model.editAlias]
+	if !ok {
+		return nil
+	}
+	model.history[server.Alias] = record
+	delete(model.history, model.editAlias)
+	return history.Save(model.historyPath, model.history)
+}
+
+func (model *Model) closeForm() {
+	model.mode = modeBrowse
+	model.form = nil
+}
+
+func (model *Model) setSubmissionError(historyErr, reloadErr error) {
 	switch {
 	case historyErr != nil:
 		model.errorText = model.translator.Error(historyErr)
@@ -136,13 +151,6 @@ func (model Model) submitForm() (tea.Model, tea.Cmd) {
 	default:
 		model.errorText = ""
 	}
-	model.resizeList()
-	return model, model.checkAllCmd()
-}
-
-func (model *Model) closeForm() {
-	model.mode = modeBrowse
-	model.form = nil
 }
 
 func (model Model) readFormServer() (domain.Server, string) {

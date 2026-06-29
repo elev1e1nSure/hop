@@ -142,30 +142,42 @@ func (model Model) Init() tea.Cmd {
 }
 
 func (model Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
-	var command tea.Cmd
-
-	switch message := message.(type) {
-	case tea.WindowSizeMsg:
-		model.width = util.Max(30, message.Width)
-		model.height = util.Max(10, message.Height)
-		model.resizeList()
-		model.resizeForm()
-		return model, nil
-	case statusCheckMsg:
-		return model.handleStatusCheck(message)
-	case connectReadyMsg:
-		return model.handleConnectReady(message)
-	case spinner.TickMsg:
-		if model.mode == modeConnecting {
-			model.spinner, command = model.spinner.Update(message)
-			return model, command
-		}
+	if updated, command, handled := model.updateSystem(message); handled {
+		return updated, command
 	}
 
 	if key, ok := message.(tea.KeyMsg); ok && key.String() == "ctrl+c" {
 		return model, tea.Quit
 	}
 
+	return model.updateByMode(message)
+}
+
+func (model Model) updateSystem(message tea.Msg) (tea.Model, tea.Cmd, bool) {
+	switch message := message.(type) {
+	case tea.WindowSizeMsg:
+		model.width = util.Max(30, message.Width)
+		model.height = util.Max(10, message.Height)
+		model.resizeList()
+		model.resizeForm()
+		return model, nil, true
+	case statusCheckMsg:
+		updated, command := model.handleStatusCheck(message)
+		return updated, command, true
+	case connectReadyMsg:
+		updated, command := model.handleConnectReady(message)
+		return updated, command, true
+	case spinner.TickMsg:
+		if model.mode == modeConnecting {
+			var command tea.Cmd
+			model.spinner, command = model.spinner.Update(message)
+			return model, command, true
+		}
+	}
+	return model, nil, false
+}
+
+func (model Model) updateByMode(message tea.Msg) (tea.Model, tea.Cmd) {
 	switch model.mode {
 	case modeForm:
 		return model.updateForm(message)
