@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build windows/amd64
+    runs-on: ubuntu-latest
+
+    env:
+      CGO_ENABLED: 0
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build release archive
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p dist release
+
+          output_path="dist/hop.exe"
+          archive_name="hop_windows_amd64"
+
+          GOOS=windows GOARCH=amd64 \
+            go build -trimpath -o "${output_path}" ./cmd/hop
+
+          python -m zipfile -c "release/${archive_name}.zip" "${output_path}"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hop_windows_amd64
+          path: release/*
+          if-no-files-found: error
+          retention-days: 1
+
+  release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/*
