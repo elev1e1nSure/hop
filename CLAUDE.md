@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # hop
 
 TUI SSH manager written in Go. Reads `~/.ssh/config`, lets you browse, filter, add, edit, delete servers, and connect to them. Built with Bubble Tea (charmbracelet stack).
@@ -22,6 +26,7 @@ internal/history/   — load/save connection history JSON
 internal/i18n/      — en/ru translations via Translator interface
 internal/ui/        — Bubble Tea model: browse / form / confirm-delete / connecting modes
 internal/apperr/    — typed errors with wrapping
+internal/pathenv/   — add/remove binary directory from user PATH; platform-specific (Windows vs others)
 internal/util/      — fs helpers (AtomicWrite with symlink resolution), fuzzy match, truncate, sanitize
 ```
 
@@ -59,12 +64,16 @@ just lint         # go vet
 just fmt          # gofmt + golines
 ```
 
+CLI flags: `--language en|ru`, `--path add|remove` (adds/removes the binary directory from PATH), `-h/--help`.
+
 Language auto-detected from `LC_ALL` / `LC_MESSAGES` / `LANG`; falls back to English.
 
 ## Tests
 
 ```bash
-just test
+just test                                    # all packages
+go test ./internal/sshconfig/...            # single package
+go test -run TestFoo ./internal/sshconfig/  # single test
 ```
 
 Tests exist for: `cli`, `sshclient`, `history`, `sshconfig`, `i18n`. No TUI tests.
@@ -73,5 +82,5 @@ Tests exist for: `cli`, `sshclient`, `history`, `sshconfig`, `i18n`. No TUI test
 
 - Error wrapping: always use `apperr.Wrap(apperr.ErrXxx, fmt.Errorf(...))` — never raw `errors.New` for domain errors.
 - i18n keys live in `internal/i18n/i18n.go` as constants (`MsgXxx`). Add key + both translations together. Remove both together when deleting.
-- Styles are centralized in `internal/ui/styles.go` — don't create ad-hoc `lipgloss.NewStyle()` elsewhere.
+- TUI styles are centralized in `internal/ui/styles.go` — don't create ad-hoc `lipgloss.NewStyle()` in TUI code. Exception: `internal/cli/help.go` has its own local styles for CLI terminal output (not TUI), which is intentional.
 - Dead code (unused constants, functions, i18n keys) must be cleaned up immediately.
