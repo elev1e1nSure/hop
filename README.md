@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center">hop</h1>
-  <p align="center">TUI SSH host manager — fast, keyboard-driven, lives on top of <code>~/.ssh/config</code>.</p>
+  <p align="center">An address book for those who confuse Germany with Finland at three in the morning.</p>
 </p>
 
 <p align="center">
@@ -38,10 +38,10 @@
 
 ### Scoop
 
-```powershell
+\`\`\`powershell
 scoop bucket add hop https://github.com/elev1e1nSure/hop-bucket
 scoop install hop
-```
+\`\`\`
 
 Scoop adds `hop` to `PATH` automatically.
 
@@ -49,20 +49,20 @@ Scoop adds `hop` to `PATH` automatically.
 
 Download the Windows release zip from the [releases page](https://github.com/elev1e1nSure/hop/releases), unpack it, then run:
 
-```powershell
+\`\`\`powershell
 hop --path add
-```
+\`\`\`
 
 ## Usage
 
-```bash
+\`\`\`bash
 hop                          # launch the TUI
 hop --language en            # force English
 hop --language ru            # force Russian
 hop --path add               # add hop to PATH
 hop --path remove            # remove hop from PATH
 hop --help                   # show help
-```
+\`\`\`
 
 | Key | Action |
 |-----|--------|
@@ -77,9 +77,9 @@ hop --help                   # show help
 
 ### Refresh PATH in current PowerShell session
 
-```powershell
+\`\`\`powershell
 $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')
-```
+\`\`\`
 
 ## Powered by
 
